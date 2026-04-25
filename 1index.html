@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Developer Admin System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+  background:#0b0b0b;
+}
+
+/* 3D POP */
+.pop3d{
+  transform-style:preserve-3d;
+  transition:0.4s;
+}
+
+.pop3d:hover{
+  transform:rotateX(10deg) rotateY(10deg) scale(1.05);
+}
+
+/* glow */
+.glow{
+  box-shadow:0 0 20px cyan;
+}
+</style>
+</head>
+
+<body class="text-white">
+
+<!-- ===== GALLERY ===== -->
+<div id="gallery" class="flex gap-4 overflow-x-auto p-6"></div>
+
+<!-- ===== DEVELOPER BUTTON ===== -->
+<div class="fixed bottom-5 right-5">
+  <button onclick="showDev()"
+    class="px-4 py-2 bg-cyan-400 text-black rounded-xl font-bold glow">
+    Developer
+  </button>
+</div>
+
+<!-- ===== DEV NAME POPUP ===== -->
+<div id="devBox"
+  class="hidden fixed bottom-20 right-5 bg-black p-4 rounded-xl glow pop3d cursor-pointer">
+
+  <h2 class="text-xl font-bold">👨‍💻 Dipto Biswas</h2>
+  <p class="text-sm text-cyan-300">Click to open Admin Panel</p>
+</div>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div id="admin"
+  class="hidden fixed top-0 left-0 w-full bg-gray-900 p-4 flex gap-2 items-center">
+
+  <input id="file" type="file"
+    class="bg-white text-black p-2 rounded">
+
+  <button onclick="upload()"
+    class="bg-cyan-400 text-black px-3 py-2 rounded">
+    Upload
+  </button>
+
+  <button onclick="closeAdmin()"
+    class="bg-red-500 px-3 py-2 rounded">
+    Close
+  </button>
+</div>
+
+<script>
+
+let data = JSON.parse(localStorage.getItem("cards")) || [];
+
+/* ===== RENDER ===== */
+function render(){
+  let g = document.getElementById("gallery");
+  g.innerHTML="";
+
+  data.forEach((img,i)=>{
+    let div = document.createElement("div");
+
+    div.className="min-w-[220px] h-[280px] rounded-xl overflow-hidden bg-black pop3d glow";
+
+    div.innerHTML=`
+      <img src="${img}" class="h-[75%] w-full object-cover">
+      <div class="h-[25%] flex items-center justify-center bg-gray-900">
+        Card ${i+1}
+      </div>
+    `;
+
+    g.appendChild(div);
+  });
+}
+
+render();
+
+/* ===== DEV BUTTON ===== */
+function showDev(){
+  document.getElementById("devBox").classList.toggle("hidden");
+}
+
+/* open admin */
+document.getElementById("devBox").onclick = function(){
+  document.getElementById("admin").classList.remove("hidden");
+  this.classList.add("hidden");
+}
+
+/* close admin */
+function closeAdmin(){
+  document.getElementById("admin").classList.add("hidden");
+}
+
+/* ===== UPLOAD ===== */
+function upload(){
+  let file = document.getElementById("file").files[0];
+
+  if(!file){
+    alert("Select image");
+    return;
+  }
+
+  let reader = new FileReader();
+
+  reader.onload = function(e){
+    data.push(e.target.result);
+    localStorage.setItem("cards", JSON.stringify(data));
+    render();
+  }
+
+  reader.readAsDataURL(file);
+}
+
+</script>
+
+</body>
+</html>
